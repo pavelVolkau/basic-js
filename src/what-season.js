@@ -20,7 +20,7 @@ function getSeason(date) {
   try {
     let isData = date.getTime()
   } catch (err) {
-    return Error('Invalid date!')
+    throw new Error('Invalid date!')
   }
   return date.getMonth() < 2
     ? 'winter'
