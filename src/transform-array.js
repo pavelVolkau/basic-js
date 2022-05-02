@@ -19,23 +19,53 @@ function transform(arr) {
   if (!Array.isArray(arr)) {
     throw new Error("'arr' parameter must be an instance of the Array!")
   }
-  let myArray = Array.from(arr)
-  for (let i = 0; i < myArray.length; i++) {
-    if (myArray[i] === '--discard-next') {
-      delete myArray[i]
-      delete myArray[i + 1]
-    }
-    if (myArray[i] === '--discard-prev') {
-      delete myArray[i]
-      delete myArray[i - 1]
-    }
-    if (myArray[i] === '--double-next') {
-      myArray[i] = myArray[i + 1]
-    }
-    if (myArray[i] === '--double-prev') {
-      myArray[i] = myArray[i - 1]
+  let tempArr = Array.from(arr),
+    temp1,
+    temp2
+  let keyArr = [
+    '--discard-next',
+    '--discard-prev',
+    '--double-next',
+    '--double-prev',
+  ]
+  for (let i = 0; i < tempArr.length; i++) {
+    switch (tempArr[i]) {
+      case '--discard-next':
+        if (i + 1 < tempArr.length && !keyArr.includes(tempArr[i + 1])) {
+          temp1 = tempArr.slice(0, i + 1)
+          temp2 = tempArr.slice(i + 1, tempArr.length)
+          temp2.shift()
+          tempArr = [...temp1, ...temp2]
+        }
+        break
+      case '--discard-prev':
+        if (i - 1 >= 0 && !keyArr.includes(tempArr[i - 1])) {
+          temp1 = tempArr.slice(0, i - 1)
+          temp2 = tempArr.slice(i - 1, tempArr.length)
+          temp2.shift()
+          tempArr = [...temp1, ...temp2]
+        }
+        break
+      case '--double-next':
+        if (i + 1 < arr.length && !keyArr.includes(tempArr[i + 1])) {
+          temp1 = tempArr.slice(0, i + 1)
+          temp2 = tempArr.slice(i + 1, tempArr.length)
+          temp1.push(temp2[0])
+          tempArr = [...temp1, ...temp2]
+        }
+        break
+      case '--double-prev':
+        if (i - 1 >= 0 && !keyArr.includes(tempArr[i - 1])) {
+          temp1 = tempArr.slice(0, i - 1)
+          temp2 = tempArr.slice(i - 1, tempArr.length)
+          temp1.push(temp2[0])
+          tempArr = [...temp1, ...temp2]
+          i++
+        }
+        break
     }
   }
+  return tempArr.filter((e) => !keyArr.includes(e))
 }
 
 module.exports = {
